@@ -24,7 +24,7 @@ import googlenet
 import googlenet2
 import googlenetbn
 import nin
-import resnet50_2
+import resnet50
 
 
 class PreprocessedDataset(chainer.dataset.DatasetMixin):
@@ -93,7 +93,7 @@ def main():
         'googlenetbn': googlenetbn.GoogLeNetBN,
         'googlenetbn_fp16': googlenetbn.GoogLeNetBNFp16,
         'nin': nin.NIN,
-        'resnet50': resnet50_2.ResNet50
+        'resnet50': resnet50.ResNet50
     }
 
     parser = argparse.ArgumentParser(
@@ -193,7 +193,7 @@ def main():
     #trainer.extend(extensions.snapshot(), trigger=val_interval)
     #trainer.extend(extensions.snapshot_object(
     #    model, 'model_iter_{.updater.iteration}'), trigger=val_interval)
-    trainer.extend(extensions.snapshot(filename='snapshot_epoch-{.updater.epoch}'))
+    #trainer.extend(extensions.snapshot(filename='snapshot_epoch-{.updater.epoch}'))
     trainer.extend(extensions.snapshot_object(model, filename='model_epoch-{.updater.epoch}'))
     # Be careful to pass the interval directly to LogReport
     # (it determines when to emit log rather than when to read observations)
