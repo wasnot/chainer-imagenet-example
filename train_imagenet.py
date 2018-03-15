@@ -137,21 +137,24 @@ def main():
 
     val_interval = (1 if args.test else 100000), 'iteration'
     log_interval = (1 if args.test else 1000), 'iteration'
+    test_interval = 1, 'epoch'
 
     trainer.extend(extensions.Evaluator(val_iter, model, device=args.gpu),
-                   trigger=val_interval)
+                   trigger=test_interval)
     trainer.extend(extensions.dump_graph('main/loss'))
-    trainer.extend(extensions.snapshot(), trigger=val_interval)
-    trainer.extend(extensions.snapshot_object(
-        model, 'model_iter_{.updater.iteration}'), trigger=val_interval)
+    #trainer.extend(extensions.snapshot(), trigger=val_interval)
+    #trainer.extend(extensions.snapshot_object(
+    #    model, 'model_iter_{.updater.iteration}'), trigger=val_interval)
+    trainer.extend(extensions.snapshot(filename='snapshot_epoch-{.updater.epoch}'))
+    trainer.extend(extensions.snapshot_object(model, filename='model_epoch-{.updater.epoch}'))
     # Be careful to pass the interval directly to LogReport
     # (it determines when to emit log rather than when to read observations)
-    trainer.extend(extensions.LogReport(trigger=log_interval))
-    trainer.extend(extensions.observe_lr(), trigger=log_interval)
+    trainer.extend(extensions.LogReport(trigger=test_interval))
+    trainer.extend(extensions.observe_lr(), trigger=test_interval)
     trainer.extend(extensions.PrintReport([
         'epoch', 'iteration', 'main/loss', 'validation/main/loss',
         'main/accuracy', 'validation/main/accuracy', 'lr'
-    ]), trigger=log_interval)
+    ]), trigger=test_interval)
     trainer.extend(extensions.ProgressBar(update_interval=10))
 
     if args.resume:
